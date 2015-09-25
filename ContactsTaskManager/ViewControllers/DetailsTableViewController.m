@@ -60,6 +60,7 @@
     [self.buttonToCall setBackgroundImage:[UIImage imageNamed:@"default"] forState:UIControlStateNormal];
     [self.updateButton setBackgroundImage:[UIImage imageNamed:@"default"] forState:UIControlStateNormal];
     self.deadlineLabelTitle.text = @"Deadline: ";
+    self.taskTextField.autocapitalizationType = UITextAutocapitalizationTypeSentences;
     
     // Setting delegates
     self.taskTextField.delegate = self;
@@ -68,7 +69,7 @@
     // Syncing UI properties with a task object
     if (self.passedTask) {
         self.taskTextField.text = self.passedTask.taskText;
-        self.deadlineLabel.text = self.passedTask.savedDate;
+        self.deadlineLabel.text = [self.dateFormatter stringFromDate:self.passedTask.savedDate];
         self.contactImage.image = [UIImage imageWithData:self.passedTask.contactImage];
         [self.contactNameButton setTitle:self.passedTask.contactFullName forState:UIControlStateNormal];
         self.detailsTextView.text = self.passedTask.detailedTaskText;
@@ -88,6 +89,7 @@
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:YES];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
 }
 
 #pragma mark - Helper methods
@@ -96,11 +98,17 @@
 - (TaskObject *)updatedTask {
     TaskObject *updatedTask = [[TaskObject alloc] init];
     updatedTask.taskText = self.taskTextField.text;
-    updatedTask.savedDate = self.deadlineLabel.text;
+    updatedTask.savedDate = [self.dateFormatter dateFromString:self.deadlineLabel.text];
     updatedTask.detailedTaskText = self.detailsTextView.text;
     updatedTask.contactFullName = self.contactNameButton.titleLabel.text;
     updatedTask.contactImage = UIImagePNGRepresentation(self.contactImage.image);
     updatedTask.phoneNumbers = self.phoneNumbers;
+    if (self.passedTask) {
+        updatedTask.uid = self.passedTask.uid;
+    } else {
+        updatedTask.uid = [NSString stringWithFormat:@"%d",(unsigned int)arc4random()%12300];
+        NSLog(@"TEST MSG: Random UID is %@", updatedTask.uid);
+    }
     
     return updatedTask;
 }

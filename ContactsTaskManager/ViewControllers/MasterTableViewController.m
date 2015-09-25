@@ -16,6 +16,7 @@
 
 @interface MasterTableViewController () <UpdatingDelegate, TaskCellDelegate>
 
+@property (strong, nonatomic) NSDateFormatter *dateFormatter;
 @property (strong, nonatomic) NSMutableArray *tasks;
 @property (strong, nonatomic) Model *model;
 
@@ -37,6 +38,15 @@
         _model = [[Model alloc] init];
     }
     return _model;
+}
+
+- (NSDateFormatter *)dateFormatter {
+    if (!_dateFormatter) {
+        _dateFormatter = [[NSDateFormatter alloc] init];
+        _dateFormatter.dateStyle = NSDateFormatterMediumStyle;
+        _dateFormatter.timeStyle = NSDateFormatterShortStyle;
+    }
+    return _dateFormatter;
 }
 
 #pragma mark - ViewController life cycle
@@ -71,6 +81,24 @@
     @synchronized(self.tasks) {
         [self.tableView reloadData];
     }
+    
+    // Scheduling local notification for every task updated
+    NSDate *currentDate = [NSDate dateWithTimeIntervalSinceNow:300];
+    if (task.savedDate == [task.savedDate laterDate:currentDate]) {
+        NSLog(@"TEST MSG: Date is differ > adding notification");
+        // Removing existing noticication
+        UIApplication *app = [UIApplication sharedApplication];
+        NSArray *eventArray = [app scheduledLocalNotifications];
+        for (UILocalNotification *event in eventArray) {
+            //NSLog(@"TEST MSG: There are: Local notification uid %@", [event.userInfo objectForKey:@"uid"]);
+            if ([[event.userInfo objectForKey:@"uid"] isEqualToString:task.uid]) {
+                NSLog(@"TEST MSG: Removing local notification");
+                [[UIApplication sharedApplication]cancelLocalNotification:event];
+            }
+        }
+        [self scheduleLocalNotificationForTask:task];
+    }
+
 }
 
 - (void)addNewTask:(TaskObject *)task {
@@ -86,6 +114,14 @@
     @synchronized(self.tasks) {
         [self.tableView reloadData];
     }
+    
+    // Scheduling local notification for every task added
+    NSDate *currentDate = [NSDate dateWithTimeIntervalSinceNow:300];
+    if (task.savedDate == [task.savedDate laterDate:currentDate]) {
+        NSLog(@"TEST MSG: Date is differ > adding notification");
+        NSLog(@"Saved date is %@ and today is %@", task.savedDate, currentDate);
+        [self scheduleLocalNotificationForTask:task];
+    }
 }
 
 #pragma mark - TaskCell delegate
@@ -97,6 +133,35 @@
 }
 
 #pragma mark - Helper methods
+
+// Local notifications method
+- (void)scheduleLocalNotificationForTask:(TaskObject *)task {
+    // Register the notification
+    UIUserNotificationType types = UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert;
+    UIUserNotificationSettings *mySettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
+    [[UIApplication sharedApplication] registerUserNotificationSettings:mySettings];
+    
+    // Creating local notification
+    UILocalNotification *notification = [[UILocalNotification alloc] init];
+    notification.timeZone    = [NSTimeZone defaultTimeZone];
+    notification.alertAction = nil;
+    notification.alertTitle  = task.taskText;
+    notification.alertBody   = [NSString stringWithFormat:@"%@\n%@", task.taskText, task.detailedTaskText];
+    notification.fireDate    = [task.savedDate dateByAddingTimeInterval:60];
+    NSLog(@"Fire date is %@", notification.fireDate);
+    notification.applicationIconBadgeNumber = 1;
+    notification.soundName   = UILocalNotificationDefaultSoundName;
+    notification.repeatInterval = 0;
+    NSDictionary *infoDict = [NSDictionary dictionaryWithObject:task.uid forKey:@"uid"];
+    notification.userInfo = infoDict;
+    [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+    
+    // For testing
+    //[[UIApplication sharedApplication] presentLocalNotificationNow:notification];
+    NSLog(@"TEST MSG: Local notification has been scheduled");
+}
+
+
 
 // Shapshot for custom reordering
 - (UIView *)customSnapshotFromView:(UIView *)inputView {
@@ -317,7 +382,7 @@
         TaskObject *task = [self.tasks objectAtIndex:indexPath.row];
         cell.taskLabel.text = task.taskText;
         [cell.buttonInCellToCall setEnabled:YES];
-        cell.dateLabel.text = task.savedDate;
+        cell.dateLabel.text = [self.dateFormatter stringFromDate:task.savedDate];
         // Checking for contact image
         if (task.contactImage) {
             cell.contactImage.image = [UIImage imageWithData:task.contactImage];
@@ -338,6 +403,12 @@
             cell.dateLabel.textColor       = [UIColor blackColor];
             cell.dateLabel.backgroundColor = [UIColor clearColor];
         }
+        // Checking for late tasks
+        /*
+        if ([task.isDone isEqual:@NO] && task.savedDate == [task.savedDate earlierDate:[NSDate date]]) {
+            cell.backgroundColor = [UIColor colorWithRed:128.0f green:0.0f blue:0.0f alpha:0.2f];
+        }
+         */
     } else {
         cell.taskLabel.text = @"Place for your task";
         cell.contactImage.image = [UIImage imageNamed:@"default"];

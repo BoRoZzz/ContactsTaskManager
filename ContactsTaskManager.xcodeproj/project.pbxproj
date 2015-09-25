@@ -82,8 +82,8 @@
 		6605B6121BAB2ADC005D4C57 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
-				6605B6161BAB2ADC005D4C57 /* AppDelegate.m */,
 				6605B6151BAB2ADC005D4C57 /* AppDelegate.h */,
+				6605B6161BAB2ADC005D4C57 /* AppDelegate.m */,
 				6605B6231BAB2ADC005D4C57 /* Info.plist */,
 				6605B6131BAB2ADC005D4C57 /* main.m */,
 				66D5634A1BAC06E5006A107E /* Defines.h */,

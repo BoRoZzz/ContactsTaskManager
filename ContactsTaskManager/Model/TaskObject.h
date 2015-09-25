@@ -13,9 +13,10 @@
 
 // Task details
 @property (strong, nonatomic) NSString *taskText;
-@property (strong, nonatomic) NSString *savedDate;
+@property (strong, nonatomic) NSDate   *savedDate;
 @property (strong, nonatomic) NSString *detailedTaskText;
 @property (strong, nonatomic) NSNumber *isDone;
+@property (strong, nonatomic) NSString *uid;
 
 // Contact details
 @property (strong, nonatomic) NSData   *contactImage;
