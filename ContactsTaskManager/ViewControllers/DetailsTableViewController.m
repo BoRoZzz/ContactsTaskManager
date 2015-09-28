@@ -25,8 +25,8 @@
 @property (weak, nonatomic) IBOutlet UIButton     *updateButton;
 
 // Private properties
-@property (strong, nonatomic) NSDateFormatter *dateFormatter;
-@property (strong, nonatomic) NSArray         *phoneNumbers;
+@property (strong, nonatomic) NSDateFormatter   *dateFormatter;
+@property (strong, nonatomic) NSArray           *phoneNumbers;
 
 // Properties for managing the UIDatePicker
 @property (nonatomic) BOOL datePickerIsShowing;
@@ -61,6 +61,17 @@
     [self.updateButton setBackgroundImage:[UIImage imageNamed:@"default"] forState:UIControlStateNormal];
     self.deadlineLabelTitle.text = @"Deadline: ";
     self.taskTextField.autocapitalizationType = UITextAutocapitalizationTypeSentences;
+    self.navigationItem.hidesBackButton = YES;
+    
+    // Setting view
+    // Modal view styling
+    self.view.layer.shadowColor = [UIColor blackColor].CGColor;
+    self.view.layer.shadowOffset = CGSizeMake(0.0, 8.0);
+    self.view.layer.shadowOpacity = 0.5;
+    self.view.layer.shadowRadius = 10.0;
+    self.view.layer.cornerRadius = 3.0;
+    self.tableView.layer.cornerRadius = 3.0;
+    self.tableView.layer.masksToBounds = YES;
     
     // Setting delegates
     self.taskTextField.delegate = self;
@@ -262,7 +273,7 @@
         //NSLog(@"Delegate is %@", self.delegate);
         if ([self.delegate respondsToSelector:@selector(addNewTask:)]) {
             [self.delegate addNewTask:[self updatedTask]];
-            [self.navigationController popViewControllerAnimated:YES];
+            [self dismissViewControllerAnimated:YES completion:nil];
         }
     }
 }

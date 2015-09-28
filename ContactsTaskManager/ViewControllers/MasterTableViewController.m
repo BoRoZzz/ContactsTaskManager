@@ -10,15 +10,17 @@
 
 #import "MasterTableViewController.h"
 #import "DetailsTableViewController.h"
+#import "CustomAnimation.h"
 #import "TaskObject.h"
 #import "TaskCell.h"
 #import "Model.h"
 
-@interface MasterTableViewController () <UpdatingDelegate, TaskCellDelegate>
+@interface MasterTableViewController () <UpdatingDelegate, TaskCellDelegate, UIViewControllerTransitioningDelegate>
 
 @property (strong, nonatomic) NSDateFormatter *dateFormatter;
 @property (strong, nonatomic) NSMutableArray *tasks;
 @property (strong, nonatomic) Model *model;
+@property (strong, nonatomic) UIVisualEffectView *visualViewToPass;
 
 @end
 
@@ -473,6 +475,27 @@
     return NO;
 }
 
+
+#pragma mark - UIViewControllerTransitioningDelegate
+
+- (id<UIViewControllerAnimatedTransitioning>)animationControllerForPresentedController:(UIViewController *)presented
+                                                                  presentingController:(UIViewController *)presenting
+                                                                      sourceController:(UIViewController *)source {
+    CustomAnimation *animator = [CustomAnimation new];
+    UIBlurEffect *blur = [UIBlurEffect effectWithStyle:UIBlurEffectStyleLight];
+    self.visualViewToPass = [[UIVisualEffectView alloc] initWithEffect:blur];
+    animator.visualView = self.visualViewToPass;
+    return animator;
+}
+
+
+- (id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
+    //CustomAnimation *animator = [CustomAnimation new];
+    //[animator.visualView removeFromSuperview];
+    [self.visualViewToPass removeFromSuperview];
+    return nil;
+}
+
 #pragma mark - Navigation
 
 // In a storyboard-based application, you will often want to do a little preparation before navigation
@@ -487,11 +510,17 @@
             vc.passedTask = [self.tasks objectAtIndex:path.row];
             vc.indexPathForSave = path.row;
             vc.delegate = self;
+            // IMPORTANT! Telling the system to keep the presenting view controller in the view hierarchy
+            vc.modalPresentationStyle = UIModalPresentationOverFullScreen;
+            vc.transitioningDelegate = self;
         }
     } else if ([segue.identifier isEqualToString:@"addTask"]) {
         if ([sender isKindOfClass:[UIBarButtonItem class]]) {
             DetailsTableViewController *vc = (DetailsTableViewController *)segue.destinationViewController;
             vc.delegate = self;
+            // IMPORTANT! Telling the system to keep the presenting view controller in the view hierarchy
+            vc.modalPresentationStyle = UIModalPresentationOverFullScreen;
+            vc.transitioningDelegate = self;
         }
     }
 }
