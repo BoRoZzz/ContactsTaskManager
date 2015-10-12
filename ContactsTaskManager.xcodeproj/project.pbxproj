@@ -124,8 +124,7 @@
 				66068CB91BB88A3000BCE6A4 /* CustomAnimation.h */,
 				66068CBA1BB88A3000BCE6A4 /* CustomAnimation.m */,
 			);
-			name = Animation;
-			path = ViewControllers;
+			path = Animation;
 			sourceTree = "<group>";
 		};
 		66D563461BAC05F1006A107E /* Model */ = {

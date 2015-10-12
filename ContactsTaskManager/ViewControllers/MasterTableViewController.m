@@ -56,6 +56,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
+    // View
+    UIImageView *tempImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableview_bg2"]];
+    [tempImageView setFrame:self.tableView.frame];
+    self.tableView.backgroundView = tempImageView;
+    
     // Loading saved data
     self.tasks = [self.model loadData];
     
@@ -197,7 +202,7 @@
         [actionSheet addAction:cancel];
         [self presentViewController:actionSheet animated:YES completion:nil];
     } else {
-        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Check your name" message:@"You don't have any number assigned" preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Couldn't make a call" message:@"The is no number assigned" preferredStyle:UIAlertControllerStyleAlert];
         UIAlertAction *action = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleCancel handler:nil];
         [alert addAction:action];
         [self presentViewController:alert animated:YES completion:nil];
@@ -329,10 +334,10 @@
             [self.tasks addObject:task];
             //NSLog(@"TEST MSG: (After done) Tasks position in array: %@", self.tasks);
             // Updating cell parameters
-            cell.backgroundColor = [UIColor grayColor];
+            cell.backgroundColor           = [UIColor greenColor];
             cell.taskLabel.backgroundColor = [UIColor clearColor];
-            cell.taskLabel.textColor = [UIColor whiteColor];
-            cell.dateLabel.textColor = [UIColor whiteColor];
+            cell.taskLabel.textColor       = [UIColor whiteColor];
+            cell.dateLabel.textColor       = [UIColor whiteColor];
             cell.dateLabel.backgroundColor = [UIColor clearColor];
             [self.tableView moveRowAtIndexPath:indexPath toIndexPath:newIndexPath];
             [self.model saveData:self.tasks];
@@ -345,10 +350,10 @@
             //NSLog(@"TEST MSG: (After undone) Tasks position in array: %@", self.tasks);
             NSIndexPath *newIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
             // Updating cell parameters
-            cell.backgroundColor = [UIColor whiteColor];
+            cell.backgroundColor           = [UIColor clearColor];
             cell.taskLabel.backgroundColor = [UIColor clearColor];
-            cell.taskLabel.textColor = [UIColor blackColor];
-            cell.dateLabel.textColor = [UIColor blackColor];
+            cell.taskLabel.textColor       = [UIColor whiteColor];
+            cell.dateLabel.textColor       = [UIColor whiteColor];
             cell.dateLabel.backgroundColor = [UIColor clearColor];
             [self.tableView moveRowAtIndexPath:indexPath toIndexPath:newIndexPath];
             [self.model saveData:self.tasks];
@@ -389,20 +394,20 @@
         if (task.contactImage) {
             cell.contactImage.image = [UIImage imageWithData:task.contactImage];
         } else {
-            cell.contactImage.image = [UIImage imageNamed:@"default"];
+            cell.contactImage.image = [UIImage imageNamed:@"icon_face"];
         }
         // Checking for DONE status
         if ([task.isDone isEqual:@YES]) {
-            cell.backgroundColor           = [UIColor grayColor];
+            cell.backgroundColor           = [UIColor greenColor];
             cell.taskLabel.backgroundColor = [UIColor clearColor];
             cell.taskLabel.textColor       = [UIColor whiteColor];
             cell.dateLabel.textColor       = [UIColor whiteColor];
             cell.dateLabel.backgroundColor = [UIColor clearColor];
         } else {
-            cell.backgroundColor           = [UIColor whiteColor];
+            cell.backgroundColor           = [UIColor clearColor];
             cell.taskLabel.backgroundColor = [UIColor clearColor];
-            cell.taskLabel.textColor       = [UIColor blackColor];
-            cell.dateLabel.textColor       = [UIColor blackColor];
+            cell.taskLabel.textColor       = [UIColor whiteColor];
+            cell.dateLabel.textColor       = [UIColor whiteColor];
             cell.dateLabel.backgroundColor = [UIColor clearColor];
         }
         // Checking for late tasks
@@ -413,13 +418,16 @@
          */
     } else {
         cell.taskLabel.text = @"Place for your task";
-        cell.contactImage.image = [UIImage imageNamed:@"default"];
+        cell.backgroundColor = [UIColor clearColor];
+        cell.taskLabel.textColor = [UIColor whiteColor];
+        cell.contactImage.image = [UIImage imageNamed:@"icon_face"];
         cell.dateLabel.text = @"Place for date";
+        cell.dateLabel.textColor = [UIColor whiteColor];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         [cell.buttonInCellToCall setEnabled:NO];
     }
     // General parameters for cell
-    [cell.buttonInCellToCall setBackgroundImage:[UIImage imageNamed:@"default"] forState:UIControlStateNormal];
+    [cell.buttonInCellToCall setBackgroundImage:[UIImage imageNamed:@"icon_phone3"] forState:UIControlStateNormal];
     cell.delegate = self;
     return cell;
 }

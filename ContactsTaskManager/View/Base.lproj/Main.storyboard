@@ -13,7 +13,8 @@
                     <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="Jg1-Zc-EDl">
                         <rect key="frame" x="0.0" y="64" width="320" height="504"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" red="0.31092716100000001" green="1" blue="0.17759298609999999" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="separatorColor" cocoaTouchSystemColor="lightTextColor"/>
+                        <inset key="separatorInset" minX="9" minY="0.0" maxX="9" maxY="0.0"/>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="taskCell" id="ZKk-XM-1sh" customClass="TaskCell">
                                 <rect key="frame" x="0.0" y="28" width="320" height="44"/>
@@ -45,6 +46,7 @@
                                         </label>
                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Zub-87-sCw">
                                             <rect key="frame" x="268" y="-1" width="44" height="44"/>
+                                            <state key="normal" backgroundImage="icon_phone"/>
                                             <connections>
                                                 <action selector="buttonTapped:" destination="ZKk-XM-1sh" eventType="touchUpInside" id="nko-94-nBR"/>
                                             </connections>
@@ -67,7 +69,6 @@
                                         <constraint firstItem="F0b-jj-bTm" firstAttribute="top" secondItem="Ujx-wK-CRR" secondAttribute="bottom" constant="2" id="mPb-N2-gcy"/>
                                     </constraints>
                                 </tableViewCellContentView>
-                                <color key="backgroundColor" red="1" green="0.0" blue="1" alpha="1" colorSpace="calibratedRGB"/>
                                 <connections>
                                     <outlet property="buttonInCellToCall" destination="Zub-87-sCw" id="A5b-c9-23L"/>
                                     <outlet property="contactImage" destination="iZS-9i-PbL" id="Uo3-Cg-Sme"/>
@@ -85,6 +86,7 @@
                     <toolbarItems/>
                     <navigationItem key="navigationItem" id="NuV-pX-e7y">
                         <barButtonItem key="rightBarButtonItem" systemItem="add" id="NGc-JI-tCW">
+                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                             <connections>
                                 <segue destination="Gdf-i9-cUj" kind="presentation" identifier="addTask" id="ZiH-Bd-xGu"/>
                             </connections>
@@ -108,7 +110,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="524"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                        <color key="separatorColor" red="0.063689969439999994" green="0.095114829969999995" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                        <color key="separatorColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                         <inset key="separatorInset" minX="15" minY="0.0" maxX="15" maxY="0.0"/>
                         <sections>
                             <tableViewSection id="Rwh-P8-CFG">
@@ -123,7 +125,7 @@
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Tm3-eU-vjU">
                                                     <rect key="frame" x="8" y="7" width="304" height="30"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <textInputTraits key="textInputTraits" returnKeyType="done"/>
+                                                    <textInputTraits key="textInputTraits" autocapitalizationType="sentences" returnKeyType="done"/>
                                                 </textField>
                                             </subviews>
                                             <constraints>
@@ -132,6 +134,7 @@
                                                 <constraint firstItem="Tm3-eU-vjU" firstAttribute="centerY" secondItem="lZm-KI-KeW" secondAttribute="centerY" id="vYU-Kk-hb0"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="yai-WI-Kf3">
                                         <rect key="frame" x="0.0" y="44" width="320" height="44"/>
@@ -162,6 +165,7 @@
                                                 <constraint firstItem="PMP-xn-Rc0" firstAttribute="baseline" secondItem="tDn-Xa-HcG" secondAttribute="baseline" id="PzR-3D-wcm"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" rowHeight="221" id="3fe-47-0NU">
                                         <rect key="frame" x="0.0" y="88" width="320" height="221"/>
@@ -191,6 +195,7 @@
                                                 <constraint firstItem="fyK-dJ-aTl" firstAttribute="centerY" secondItem="5D0-p8-Caw" secondAttribute="centerY" id="RTd-AN-s8S"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="KTY-bP-1P4">
                                         <rect key="frame" x="0.0" y="309" width="320" height="44"/>
@@ -207,6 +212,7 @@
                                                 </imageView>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nGH-vH-ekg">
                                                     <rect key="frame" x="268" y="0.0" width="44" height="44"/>
+                                                    <state key="normal" backgroundImage="icon_phone"/>
                                                     <connections>
                                                         <action selector="makeCall:" destination="Gdf-i9-cUj" eventType="touchUpInside" id="4sR-DM-yPu"/>
                                                     </connections>
@@ -231,6 +237,7 @@
                                                 <constraint firstItem="nGH-vH-ekg" firstAttribute="top" secondItem="Tcp-bs-Wk1" secondAttribute="top" id="zkC-4q-iCA"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
@@ -256,6 +263,7 @@
                                                 <constraint firstItem="b3y-BG-JH6" firstAttribute="centerY" secondItem="QrQ-dB-Mqf" secondAttribute="centerY" id="vBK-kW-6gq"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="TlN-21-sqn">
                                         <rect key="frame" x="0.0" y="512" width="320" height="44"/>
@@ -269,6 +277,7 @@
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="44" id="MeS-WK-DKD"/>
                                                     </constraints>
+                                                    <state key="normal" backgroundImage="icon_done"/>
                                                     <connections>
                                                         <action selector="updateTask:" destination="Gdf-i9-cUj" eventType="touchUpInside" id="4AY-mY-Ebz"/>
                                                     </connections>
@@ -280,6 +289,7 @@
                                                 <constraint firstItem="yc5-d8-ORf" firstAttribute="centerY" secondItem="gqg-Iu-8e4" secondAttribute="centerY" id="jJ2-yE-we9"/>
                                             </constraints>
                                         </tableViewCellContentView>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
@@ -315,9 +325,10 @@
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="Q8S-Ur-T4E" sceneMemberID="viewController">
                     <toolbarItems/>
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina4"/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="9pg-2e-IUI">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" backIndicatorImage="tableview_bg" backIndicatorTransitionMaskImage="tableview_bg" id="9pg-2e-IUI">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
+                        <color key="barTintColor" red="0.1764705882352941" green="0.32156862745098036" blue="0.37647058823529411" alpha="0.82000000000000006" colorSpace="calibratedRGB"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
                     <connections>
@@ -329,6 +340,11 @@
             <point key="canvasLocation" x="296" y="358"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="icon_done" width="512" height="512"/>
+        <image name="icon_phone" width="512" height="512"/>
+        <image name="tableview_bg" width="1197" height="1798"/>
+    </resources>
     <inferredMetricsTieBreakers>
         <segue reference="ZiH-Bd-xGu"/>
     </inferredMetricsTieBreakers>

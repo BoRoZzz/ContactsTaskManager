@@ -57,11 +57,12 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow) name:UIKeyboardWillShowNotification object:nil];
     
     // Default settings for UI
-    [self.buttonToCall setBackgroundImage:[UIImage imageNamed:@"default"] forState:UIControlStateNormal];
-    [self.updateButton setBackgroundImage:[UIImage imageNamed:@"default"] forState:UIControlStateNormal];
+    [self.buttonToCall setBackgroundImage:[UIImage imageNamed:@"icon_phone1"] forState:UIControlStateNormal];
+    [self.updateButton setBackgroundImage:[UIImage imageNamed:@"icon_done1"] forState:UIControlStateNormal];
     self.deadlineLabelTitle.text = @"Deadline: ";
     self.taskTextField.autocapitalizationType = UITextAutocapitalizationTypeSentences;
     self.navigationItem.hidesBackButton = YES;
+    self.taskTextField.backgroundColor = [UIColor clearColor];
     
     // Setting view
     // Modal view styling
@@ -72,6 +73,9 @@
     self.view.layer.cornerRadius = 3.0;
     self.tableView.layer.cornerRadius = 3.0;
     self.tableView.layer.masksToBounds = YES;
+    UIImageView *tempImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tableview_bg"]];
+    [tempImageView setFrame:self.tableView.frame];
+    self.tableView.backgroundView = tempImageView;
     
     // Setting delegates
     self.taskTextField.delegate = self;
@@ -91,7 +95,7 @@
         [self.contactNameButton setTitle:@"Assign a contact" forState:UIControlStateNormal];
         self.taskTextField.placeholder = @"Name your task here";
         self.deadlineLabel.text = [self.dateFormatter stringFromDate:[NSDate date]];
-        self.contactImage.image = [UIImage imageNamed:@"default"];
+        self.contactImage.image = [UIImage imageNamed:@"icon_face"];
         self.detailsTextView.text = @"This is the place for details";
     }
 }
