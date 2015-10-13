@@ -19,28 +19,28 @@
     UIViewController *fromViewController = [transitionContext viewControllerForKey:UITransitionContextFromViewControllerKey];
     UIViewController *toViewController = [transitionContext viewControllerForKey:UITransitionContextToViewControllerKey];
     
+    CGRect endFrame   = CGRectMake(40, 40, toViewController.view.frame.size.width - 80, toViewController.view.frame.size.height - 80);
+    
+    toViewController.view.frame = endFrame;
+    
     // Creating blur effect
     self.visualView.frame = fromViewController.view.frame;
     [fromViewController.view addSubview:self.visualView];
-    // Prepare the view of the toViewController
-    CGRect endFrame = CGRectMake(40, 40, toViewController.view.frame.size.width - 80, toViewController.view.frame.size.height - 80);
-    toViewController.view.frame = CGRectOffset(endFrame, 0.6f*fromViewController.view.frame.size.width, 0);
-    
     
     // Add the view of the toViewController to the containerView
     [[transitionContext containerView] addSubview:toViewController.view];
     
-    // Create animator
-    __block UIDynamicAnimator  *animator = [[UIDynamicAnimator alloc] initWithReferenceView:[transitionContext containerView]];
+    [toViewController.view setAlpha:0];
+    [UIView beginAnimations:NULL context:nil];
+    [UIView setAnimationDuration:0.5];
+    [toViewController.view setAlpha:1.0];
+    [UIView commitAnimations];
     
-    // Add behaviors
-    UISnapBehavior* snapBehavior = [[UISnapBehavior alloc] initWithItem:toViewController.view snapToPoint:fromViewController.view.center];
-    [animator addBehavior:snapBehavior];
     
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)([self transitionDuration:transitionContext] * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-        animator = nil;
         [transitionContext completeTransition:![transitionContext transitionWasCancelled]];
     });
+
 }
 
 @end

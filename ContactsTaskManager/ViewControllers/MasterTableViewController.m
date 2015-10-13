@@ -11,16 +11,19 @@
 #import "MasterTableViewController.h"
 #import "DetailsTableViewController.h"
 #import "CustomAnimation.h"
+#import "DismissAnimator.h"
+#import "Defines.h"
 #import "TaskObject.h"
 #import "TaskCell.h"
 #import "Model.h"
 
 @interface MasterTableViewController () <UpdatingDelegate, TaskCellDelegate, UIViewControllerTransitioningDelegate>
 
-@property (strong, nonatomic) NSDateFormatter *dateFormatter;
-@property (strong, nonatomic) NSMutableArray *tasks;
-@property (strong, nonatomic) Model *model;
-@property (strong, nonatomic) UIVisualEffectView *visualViewToPass;
+@property (strong, nonatomic) NSDateFormatter     *dateFormatter;
+@property (strong, nonatomic) NSMutableArray      *tasks;
+@property (strong, nonatomic) NSMutableDictionary *tasksForPlist;
+@property (strong, nonatomic) Model               *model;
+@property (strong, nonatomic) UIVisualEffectView  *visualViewToPass;
 
 @end
 
@@ -33,6 +36,13 @@
         _tasks = [[NSMutableArray alloc] init];
     }
     return _tasks;
+}
+
+- (NSMutableDictionary *)tasksForPlist {
+    if (!_tasksForPlist) {
+        _tasksForPlist = [[NSMutableDictionary alloc] init];
+    }
+    return _tasksForPlist;
 }
 
 - (Model *)model {
@@ -62,7 +72,14 @@
     self.tableView.backgroundView = tempImageView;
     
     // Loading saved data
-    self.tasks = [self.model loadData];
+    self.tasksForPlist = [[self.model loadData]mutableCopy];
+    if ([self.tasksForPlist objectForKey:PLIST]) {
+        NSArray *myTasksAsAPropertyLists = [self.tasksForPlist objectForKey:PLIST];
+        for (NSDictionary *dictionary in myTasksAsAPropertyLists) {
+            TaskObject *object = [self objectForDictionary:dictionary];
+            [self.tasks addObject:object];
+        }
+    }
     
     // Gesture recognizers
     // Setting task to done
@@ -78,12 +95,19 @@
 #pragma mark - UpdatingDelegate methods
 
 - (void)updateTask:(TaskObject *)task forRow:(long)row {
+    [self removeBlur];
     @synchronized(self.tasks) {
+        // Replaces object in objects
         [self.tasks replaceObjectAtIndex:row withObject:task];
         NSLog(@"Tasks after update are: %@", self.tasks);
     }
     @synchronized(self.tasks) {
-        [self.model saveData:self.tasks];
+        // Loads tasks array
+        NSMutableArray *tasksArray = [[self.tasksForPlist objectForKey:PLIST]mutableCopy];
+        // Replaces object in plist
+        [tasksArray replaceObjectAtIndex:row withObject:[self taskObjectAsAPropertyList:task]];
+        [self.tasksForPlist setObject:tasksArray forKey:PLIST];
+        [self.model saveData:self.tasksForPlist];
     }
     @synchronized(self.tasks) {
         [self.tableView reloadData];
@@ -109,6 +133,7 @@
 }
 
 - (void)addNewTask:(TaskObject *)task {
+    [self removeBlur];
     NSLog(@"Delegate of add task works");
     @synchronized(self.tasks) {
         task.isDone = @NO;
@@ -116,7 +141,15 @@
         NSLog(@"New task added, tasks are: %@", self.tasks);
     }
     @synchronized(self.tasks) {
-        [self.model saveData:self.tasks];
+        // Loads tasks array
+        NSMutableArray *tasksArray = [[self.tasksForPlist objectForKey:PLIST]mutableCopy];
+        // Creates tasks array if nil
+        if(!tasksArray)tasksArray  = [[NSMutableArray alloc]init];
+        // Adds task object as plist
+        [tasksArray insertObject:[self taskObjectAsAPropertyList:task] atIndex:0];
+        [self.tasksForPlist setObject:tasksArray forKey:PLIST];
+        // Saves
+        [self.model saveData:self.tasksForPlist];
     }
     @synchronized(self.tasks) {
         [self.tableView reloadData];
@@ -140,6 +173,21 @@
 }
 
 #pragma mark - Helper methods
+
+// Turns PL into a task object
+- (TaskObject *)objectForDictionary:(NSDictionary *)dictionary {
+    TaskObject *object = [[TaskObject alloc] initWithData:dictionary];
+    return object;
+}
+
+// Task object as PL
+-(NSDictionary *)taskObjectAsAPropertyList:(TaskObject *)taskObject {
+    NSDictionary *dictionary = @{USER_TASK     : taskObject.taskText,         USER_DESCRIPTION     : taskObject.detailedTaskText,
+                                 USER_DATE     : taskObject.savedDate,        CONTACT_FULLNAME     : taskObject.contactFullName,
+                                 CONTACT_IMAGE : taskObject.contactImage,     USER_BOOL            : taskObject.isDone,
+                                 USER_UID      : taskObject.uid,              CONTACT_NUMBER       : taskObject.phoneNumbers};
+    return dictionary;
+}
 
 // Local notifications method
 - (void)scheduleLocalNotificationForTask:(TaskObject *)task {
@@ -179,6 +227,17 @@
     snapshot.layer.shadowRadius = 5.0;
     snapshot.layer.shadowOpacity = 0.4;
     return snapshot;
+}
+
+// Remove blur effect
+- (void)removeBlur {
+    self.visualViewToPass.alpha = 1.0;
+    [UIView animateWithDuration:0.7 animations:^{
+        self.visualViewToPass.alpha = 0.0;
+    } completion:^(BOOL finished) {
+        [self.visualViewToPass removeFromSuperview];
+    }];
+    
 }
 
 // Calling methods
@@ -282,7 +341,11 @@
                 // Move the rows
                 [self.tableView moveRowAtIndexPath:sourceIndexPath toIndexPath:indexPath];
                 // Saving new data
-                [self.model saveData:self.tasks];
+                NSMutableArray *tasksArray = [[self.tasksForPlist objectForKey:PLIST]mutableCopy];
+                // Replaces object in plist
+                [tasksArray exchangeObjectAtIndex:indexPath.row withObjectAtIndex:sourceIndexPath.row];
+                [self.tasksForPlist setObject:tasksArray forKey:PLIST];
+                [self.model saveData:self.tasksForPlist];
                 
                 // Update source so it is in sync with UI changes
                 sourceIndexPath = indexPath;
@@ -340,7 +403,12 @@
             cell.dateLabel.textColor       = [UIColor whiteColor];
             cell.dateLabel.backgroundColor = [UIColor clearColor];
             [self.tableView moveRowAtIndexPath:indexPath toIndexPath:newIndexPath];
-            [self.model saveData:self.tasks];
+            // Replaces object in plist
+            NSMutableArray *tasksArray = [[self.tasksForPlist objectForKey:PLIST]mutableCopy];
+            [tasksArray removeObjectAtIndex:indexPath.row];
+            [tasksArray addObject:[self taskObjectAsAPropertyList:task]];
+            [self.tasksForPlist setObject:tasksArray forKey:PLIST];
+            [self.model saveData:self.tasksForPlist];
         } else {
             NSLog(@"TEST MSG: isDone = YES");
             task.isDone = @NO;
@@ -356,7 +424,12 @@
             cell.dateLabel.textColor       = [UIColor whiteColor];
             cell.dateLabel.backgroundColor = [UIColor clearColor];
             [self.tableView moveRowAtIndexPath:indexPath toIndexPath:newIndexPath];
-            [self.model saveData:self.tasks];
+            // Replaces object in plist
+            NSMutableArray *tasksArray = [[self.tasksForPlist objectForKey:PLIST]mutableCopy];
+            [tasksArray removeObjectAtIndex:indexPath.row];
+            [tasksArray insertObject:[self taskObjectAsAPropertyList:task] atIndex:0];
+            [self.tasksForPlist setObject:tasksArray forKey:PLIST];
+            [self.model saveData:self.tasksForPlist];
         }
         
     }
@@ -394,7 +467,7 @@
         if (task.contactImage) {
             cell.contactImage.image = [UIImage imageWithData:task.contactImage];
         } else {
-            cell.contactImage.image = [UIImage imageNamed:@"icon_face"];
+            cell.contactImage.image = [UIImage imageNamed:@"icon_face_master"];
         }
         // Checking for DONE status
         if ([task.isDone isEqual:@YES]) {
@@ -420,14 +493,14 @@
         cell.taskLabel.text = @"Place for your task";
         cell.backgroundColor = [UIColor clearColor];
         cell.taskLabel.textColor = [UIColor whiteColor];
-        cell.contactImage.image = [UIImage imageNamed:@"icon_face"];
+        cell.contactImage.image = [UIImage imageNamed:@"icon_face_master"];
         cell.dateLabel.text = @"Place for date";
         cell.dateLabel.textColor = [UIColor whiteColor];
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
         [cell.buttonInCellToCall setEnabled:NO];
     }
     // General parameters for cell
-    [cell.buttonInCellToCall setBackgroundImage:[UIImage imageNamed:@"icon_phone3"] forState:UIControlStateNormal];
+    [cell.buttonInCellToCall setBackgroundImage:[UIImage imageNamed:@"icon_phone_master"] forState:UIControlStateNormal];
     cell.delegate = self;
     return cell;
 }
@@ -461,7 +534,12 @@
             }
             // Saving changes
             @synchronized(self.tasks) {
-                [self.model saveData:self.tasks];
+                // Loads tasks array
+                NSMutableArray *tasksArray = [[self.tasksForPlist objectForKey:PLIST]mutableCopy];
+                // Replaces object in plist
+                [tasksArray removeObjectAtIndex:indexPath.row];
+                [self.tasksForPlist setObject:tasksArray forKey:PLIST];
+                [self.model saveData:self.tasksForPlist];
             }
             [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
             if ([self.tasks count] == 0) {
@@ -496,12 +574,10 @@
     return animator;
 }
 
-
 - (id<UIViewControllerAnimatedTransitioning>)animationControllerForDismissedController:(UIViewController *)dismissed {
-    //CustomAnimation *animator = [CustomAnimation new];
-    //[animator.visualView removeFromSuperview];
-    [self.visualViewToPass removeFromSuperview];
-    return nil;
+    DismissAnimator *animator = [DismissAnimator new];
+    //[self viewWillAppear:YES];
+    return animator;
 }
 
 #pragma mark - Navigation

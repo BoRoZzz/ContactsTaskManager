@@ -27,6 +27,7 @@
 // Private properties
 @property (strong, nonatomic) NSDateFormatter   *dateFormatter;
 @property (strong, nonatomic) NSArray           *phoneNumbers;
+@property (strong, nonatomic) UIImage           *tempContactImage;
 
 // Properties for managing the UIDatePicker
 @property (nonatomic) BOOL datePickerIsShowing;
@@ -57,8 +58,8 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow) name:UIKeyboardWillShowNotification object:nil];
     
     // Default settings for UI
-    [self.buttonToCall setBackgroundImage:[UIImage imageNamed:@"icon_phone1"] forState:UIControlStateNormal];
-    [self.updateButton setBackgroundImage:[UIImage imageNamed:@"icon_done1"] forState:UIControlStateNormal];
+    [self.buttonToCall setBackgroundImage:[UIImage imageNamed:@"icon_phone_detail"] forState:UIControlStateNormal];
+    [self.updateButton setBackgroundImage:[UIImage imageNamed:@"icon_done"] forState:UIControlStateNormal];
     self.deadlineLabelTitle.text = @"Deadline: ";
     self.taskTextField.autocapitalizationType = UITextAutocapitalizationTypeSentences;
     self.navigationItem.hidesBackButton = YES;
@@ -85,18 +86,27 @@
     if (self.passedTask) {
         self.taskTextField.text = self.passedTask.taskText;
         self.deadlineLabel.text = [self.dateFormatter stringFromDate:self.passedTask.savedDate];
-        self.contactImage.image = [UIImage imageWithData:self.passedTask.contactImage];
+        if (![self.passedTask.contactImage isEqualToData: UIImagePNGRepresentation([UIImage imageNamed:@"icon_face_master"])]) {
+            self.contactImage.image = [UIImage imageWithData:self.passedTask.contactImage];
+        } else {
+            self.contactImage.image = [UIImage imageNamed:@"icon_face_detail"];
+        }
+        if (self.passedTask.detailedTaskText) {
+            self.detailsTextView.text = self.passedTask.detailedTaskText;
+        } //else {
+          //  self.detailsTextView.text = @"This is the place for details";
+          //  self.detailsTextView.textColor = [UIColor lightGrayColor];
+        //}
         [self.contactNameButton setTitle:self.passedTask.contactFullName forState:UIControlStateNormal];
-        self.detailsTextView.text = self.passedTask.detailedTaskText;
         self.phoneNumbers = self.passedTask.phoneNumbers;
     } else {
         self.datePickerHasBeenPressed = 0;
-        self.contactImage.image = [UIImage imageNamed:@"default"];
         [self.contactNameButton setTitle:@"Assign a contact" forState:UIControlStateNormal];
         self.taskTextField.placeholder = @"Name your task here";
         self.deadlineLabel.text = [self.dateFormatter stringFromDate:[NSDate date]];
-        self.contactImage.image = [UIImage imageNamed:@"icon_face"];
+        self.contactImage.image = [UIImage imageNamed:@"icon_face_detail"];
         self.detailsTextView.text = @"This is the place for details";
+        self.detailsTextView.textColor = [UIColor lightGrayColor];
     }
 }
 
@@ -111,28 +121,36 @@
 
 // New or updated task for UpdatingDelegate protocol
 - (TaskObject *)updatedTask {
-    TaskObject *updatedTask = [[TaskObject alloc] init];
-    updatedTask.taskText = self.taskTextField.text;
-    updatedTask.savedDate = [self.dateFormatter dateFromString:self.deadlineLabel.text];
-    updatedTask.detailedTaskText = self.detailsTextView.text;
-    updatedTask.contactFullName = self.contactNameButton.titleLabel.text;
-    updatedTask.contactImage = UIImagePNGRepresentation(self.contactImage.image);
-    updatedTask.phoneNumbers = self.phoneNumbers;
+    TaskObject *updatedTask      = [[TaskObject alloc] init];
+    updatedTask.taskText         = self.taskTextField.text;
+    updatedTask.savedDate        = [self.dateFormatter dateFromString:self.deadlineLabel.text];
+    //if (![self.detailsTextView.text isEqualToString:@"This is the place for details"]) {
+        updatedTask.detailedTaskText = self.detailsTextView.text;
+    //}
+    updatedTask.contactFullName  = self.contactNameButton.titleLabel.text;
+    if (self.tempContactImage) {
+        updatedTask.contactImage = UIImagePNGRepresentation(self.tempContactImage);
+    } else {
+        updatedTask.contactImage = UIImagePNGRepresentation([UIImage imageNamed:@"icon_face_master"]);
+    }
+    if (self.phoneNumbers) {
+        updatedTask.phoneNumbers = self.phoneNumbers;
+    } else {
+        updatedTask.phoneNumbers = @[];
+    }
     if (self.passedTask) {
+        updatedTask.isDone = self.passedTask.isDone;
         updatedTask.uid = self.passedTask.uid;
     } else {
         updatedTask.uid = [NSString stringWithFormat:@"%d",(unsigned int)arc4random()%12300];
         NSLog(@"TEST MSG: Random UID is %@", updatedTask.uid);
     }
-    
     return updatedTask;
 }
 
 // Method for keyboard observer
 - (void)keyboardWillShow {
-    
     if (self.datePickerIsShowing){
-        
         [self hideDatePickerCell];
     }
 }
@@ -248,6 +266,37 @@
     return YES;
 }
 
+#pragma mark - TextView delegate
+// For dismissing keyboard
+- (BOOL)textView:(UITextView *)textView shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
+{
+    if ([text isEqualToString:@"\n"])
+    {
+        [textView resignFirstResponder];
+    }
+    return YES;
+}
+
+
+// For placeholder
+- (void)textViewDidBeginEditing:(UITextView *)textView
+{
+    if ([textView.text isEqualToString:@"This is the place for details"]) {
+        textView.text = @"";
+        textView.textColor = [UIColor blackColor]; //optional
+    }
+    [textView becomeFirstResponder];
+}
+
+- (void)textViewDidEndEditing:(UITextView *)textView
+{
+    if ([textView.text isEqualToString:@""]) {
+        textView.text = @"This is the place for details";
+        textView.textColor = [UIColor lightGrayColor]; //optional
+    }
+    [textView resignFirstResponder];
+}
+
 #pragma mark - CNContactPickerDelegate
 
 - (void)contactPicker:(CNContactPickerViewController *)picker didSelectContact:(CNContact *)contact {
@@ -255,7 +304,8 @@
     NSString *fullName = [NSString stringWithFormat:@"%@ %@", contact.givenName, contact.familyName];
     [self.contactNameButton setTitle:fullName forState:UIControlStateNormal];
     if (contact.imageDataAvailable) {
-        self.contactImage.image = [UIImage imageWithData:contact.imageData];
+        self.tempContactImage   = [UIImage imageWithData:contact.imageData];
+        self.contactImage.image = self.tempContactImage;
     }
     self.phoneNumbers = contact.phoneNumbers;
 }
@@ -268,16 +318,25 @@
 
 // Saving a task by sending a new/updated task to master
 - (IBAction)updateTask:(id)sender {
-    if (self.passedTask) {
-        NSLog(@"TEST MSG: Updating task");
-        [self.delegate updateTask:[self updatedTask] forRow:self.indexPathForSave];
-        [self dismissViewControllerAnimated:YES completion:nil];
+    // Checking for empty inputs
+    if ([self.taskTextField.text isEqualToString:@""]) {
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Your task is empty" message:@"Please input a task name before saving" preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *action = [UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleCancel handler:nil];
+        [alertController addAction:action];
+        [self presentViewController:alertController animated:YES completion:nil];
     } else {
-        NSLog(@"TEST MSG: Adding new task");
-        //NSLog(@"Delegate is %@", self.delegate);
-        if ([self.delegate respondsToSelector:@selector(addNewTask:)]) {
-            [self.delegate addNewTask:[self updatedTask]];
+        // Saving task
+        if (self.passedTask) {
+            NSLog(@"TEST MSG: Updating task");
+            [self.delegate updateTask:[self updatedTask] forRow:self.indexPathForSave];
             [self dismissViewControllerAnimated:YES completion:nil];
+        } else {
+            NSLog(@"TEST MSG: Adding new task");
+            //NSLog(@"Delegate is %@", self.delegate);
+            if ([self.delegate respondsToSelector:@selector(addNewTask:)]) {
+                [self.delegate addNewTask:[self updatedTask]];
+                [self dismissViewControllerAnimated:YES completion:nil];
+            }
         }
     }
 }
@@ -291,6 +350,7 @@
 - (IBAction)selectContact:(id)sender {
     CNContactPickerViewController *contactsPicker = [[CNContactPickerViewController alloc] init];
     contactsPicker.delegate = self;
+    contactsPicker.modalPresentationStyle = UIModalPresentationOverFullScreen;
     [self presentViewController:contactsPicker animated:YES completion:nil];
 }
 

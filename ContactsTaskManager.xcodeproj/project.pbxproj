@@ -15,6 +15,7 @@
 		6605B62D1BAB2BA4005D4C57 /* MasterTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 6605B62C1BAB2BA4005D4C57 /* MasterTableViewController.m */; settings = {ASSET_TAGS = (); }; };
 		66068CBB1BB88A3000BCE6A4 /* CustomAnimation.m in Sources */ = {isa = PBXBuildFile; fileRef = 66068CBA1BB88A3000BCE6A4 /* CustomAnimation.m */; settings = {ASSET_TAGS = (); }; };
 		66074ECB1BAC2D9B000BDB0E /* DetailsTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 66074ECA1BAC2D9B000BDB0E /* DetailsTableViewController.m */; settings = {ASSET_TAGS = (); }; };
+		6640067D1BCC36E0004699FE /* DismissAnimator.m in Sources */ = {isa = PBXBuildFile; fileRef = 6640067C1BCC36E0004699FE /* DismissAnimator.m */; settings = {ASSET_TAGS = (); }; };
 		66D563491BAC0637006A107E /* TaskObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 66D563481BAC0637006A107E /* TaskObject.m */; settings = {ASSET_TAGS = (); }; };
 		66D5634D1BAC10CF006A107E /* Model.m in Sources */ = {isa = PBXBuildFile; fileRef = 66D5634C1BAC10CF006A107E /* Model.m */; settings = {ASSET_TAGS = (); }; };
 		66D563501BAC2122006A107E /* TaskCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 66D5634F1BAC2122006A107E /* TaskCell.m */; settings = {ASSET_TAGS = (); }; };
@@ -35,6 +36,8 @@
 		66068CBA1BB88A3000BCE6A4 /* CustomAnimation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomAnimation.m; sourceTree = "<group>"; };
 		66074EC91BAC2D9B000BDB0E /* DetailsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DetailsTableViewController.h; sourceTree = "<group>"; };
 		66074ECA1BAC2D9B000BDB0E /* DetailsTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DetailsTableViewController.m; sourceTree = "<group>"; };
+		6640067B1BCC36E0004699FE /* DismissAnimator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DismissAnimator.h; sourceTree = "<group>"; };
+		6640067C1BCC36E0004699FE /* DismissAnimator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DismissAnimator.m; sourceTree = "<group>"; };
 		66D563471BAC0637006A107E /* TaskObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TaskObject.h; sourceTree = "<group>"; };
 		66D563481BAC0637006A107E /* TaskObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TaskObject.m; sourceTree = "<group>"; };
 		66D5634A1BAC06E5006A107E /* Defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Defines.h; sourceTree = "<group>"; };
@@ -123,6 +126,8 @@
 			children = (
 				66068CB91BB88A3000BCE6A4 /* CustomAnimation.h */,
 				66068CBA1BB88A3000BCE6A4 /* CustomAnimation.m */,
+				6640067B1BCC36E0004699FE /* DismissAnimator.h */,
+				6640067C1BCC36E0004699FE /* DismissAnimator.m */,
 			);
 			path = Animation;
 			sourceTree = "<group>";
@@ -209,6 +214,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				66D563491BAC0637006A107E /* TaskObject.m in Sources */,
+				6640067D1BCC36E0004699FE /* DismissAnimator.m in Sources */,
 				6605B6171BAB2ADC005D4C57 /* AppDelegate.m in Sources */,
 				66D563501BAC2122006A107E /* TaskCell.m in Sources */,
 				6605B6141BAB2ADC005D4C57 /* main.m in Sources */,

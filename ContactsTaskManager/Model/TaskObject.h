@@ -23,4 +23,7 @@
 @property (strong, nonatomic) NSString *contactFullName;
 @property (strong, nonatomic) NSArray  *phoneNumbers;
 
+// Designated Initializer
+-(instancetype)initWithData:(NSDictionary *)data;
+
 @end

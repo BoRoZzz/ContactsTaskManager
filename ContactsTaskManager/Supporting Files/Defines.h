@@ -9,6 +9,7 @@
 #ifndef Defines_h
 #define Defines_h
 
+// TaskObject defines
 #define USER_TASK        @"Task Name"
 #define USER_DATE        @"Deadline"
 #define USER_DESCRIPTION @"Task description"
@@ -17,6 +18,9 @@
 #define CONTACT_IMAGE    @"Image of the Contact"
 #define CONTACT_FULLNAME @"Contact Full Name"
 #define CONTACT_NUMBER   @"Mobile Number"
+
+// For saving/loading
+#define PLIST            @"Task object as a property list"
 
 
 #endif /* Defines_h */

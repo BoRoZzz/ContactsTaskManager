@@ -10,7 +10,7 @@
 
 @interface Model : NSObject
 
-- (void)saveData:(NSMutableArray *)data;
-- (NSMutableArray *)loadData;
+- (void)saveData:(NSDictionary *)data;
+- (NSDictionary *)loadData;
 
 @end
